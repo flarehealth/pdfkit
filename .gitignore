@@ -6,10 +6,6 @@ src/
 playground/
 build/
 js/
-demo/bundle.js
-*.html
-!demo/browser.html
 .vscode
 coverage
-tests/integration/__pdfs__
-tests/integration/pdfmake/__pdfs__
+package-lock.json

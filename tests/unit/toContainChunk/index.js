@@ -35,7 +35,11 @@ export default {
     let pass = headIndex !== -1;
     if (pass) {
       for (let i = 1; i < chunk.length; ++i) {
-        pass = pass && this.equals(data[headIndex + i], chunk[i]);
+        if (chunk[i] instanceof RegExp) {
+          pass = pass && chunk[i].test(data[headIndex + i]);
+        } else {
+          pass = pass && this.equals(data[headIndex + i], chunk[i]);
+        }
       }
     }
 

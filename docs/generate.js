@@ -164,7 +164,7 @@ class Node {
   }
 
   // sets the styles on the document for this node
-  setStyle(doc) {
+  setStyle (doc) {
     if (this.style.font) {
       doc.font(this.style.font);
     }
@@ -181,7 +181,7 @@ class Node {
 
     const options = {};
     options.align = this.style.align;
-    options.link = this.attrs.href || false; // override continued link
+    options.link = this.attrs.href || null; // override continued link
     if (this.attrs.continued != null) {
       options.continued = this.attrs.continued;
     }
@@ -189,7 +189,7 @@ class Node {
   }
 
   // renders this node and its subnodes to the document
-  render(doc, continued) {
+  render (doc, continued) {
     let y;
     if (continued == null) {
       continued = false;
@@ -286,7 +286,7 @@ const render = (doc, filename) => {
 };
 
 // renders the title page of the guide
-const renderTitlePage = (doc) => {
+const renderTitlePage = doc => {
   const title = 'PDFKit Guide';
   const author = 'By Devon Govett';
   const version = `Version ${require('../package.json').version}`;
@@ -324,6 +324,9 @@ render(doc, 'text.md');
 render(doc, 'images.md');
 render(doc, 'outline.md');
 render(doc, 'annotations.md');
+render(doc, 'forms.md');
 render(doc, 'destinations.md');
+render(doc, 'attachments.md');
+render(doc, 'accessibility.md');
 render(doc, 'you_made_it.md');
 doc.end();

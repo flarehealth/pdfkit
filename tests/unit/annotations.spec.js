@@ -4,7 +4,7 @@ import { logData } from './helpers';
 
 // manual mock for PDFSecurity to ensure stored id will be the same accross different systems
 PDFSecurity.generateFileID = () => {
-  return new Buffer('mocked-pdf-id');
+  return Buffer.from('mocked-pdf-id');
 };
 
 describe('Annotations', () => {
@@ -54,7 +54,10 @@ describe('Annotations', () => {
 
       const docData = logData(document);
 
-      document.text('Go to url', { link: 'http://www.example.com', continued: true });
+      document.text('Go to url', {
+        link: 'http://www.example.com',
+        continued: true
+      });
       document.text('continued link');
 
       expect(docData).toContainChunk([
@@ -79,9 +82,12 @@ describe('Annotations', () => {
 
       const docData = logData(document);
 
-      document.text('Go to url', { link: 'http://www.example.com', continued: true });
+      document.text('Go to url', {
+        link: 'http://www.example.com',
+        continued: true
+      });
       document.text('no continued link', { link: null });
-      
+
       // console.log(docData);
       expect(docData).toContainChunk([
         `11 0 obj`,
@@ -91,10 +97,85 @@ describe('Annotations', () => {
 >>`
       ]);
 
-      expect(docData).not.toContainChunk([
-        `14 0 obj`
+      expect(docData).not.toContainChunk([`14 0 obj`]);
+    });
+  });
+
+  describe('fileAnnotation', () => {
+    test('creating a fileAnnotation', () => {
+      const docData = logData(document);
+
+      document.fileAnnotation(100, 100, 20, 20, {
+        src: Buffer.from('example text'),
+        name: 'file.txt'
+      });
+
+      expect(docData).toContainChunk([
+        `10 0 obj`,
+        `<<
+/Subtype /FileAttachment
+/FS 9 0 R
+/Type /Annot
+/Rect [100 672 120 692]
+/Border [0 0 0]
+/C [0 0 0]
+>>`
       ]);
     });
 
+    test("using the file's description", () => {
+      const docData = logData(document);
+
+      document.fileAnnotation(100, 100, 20, 20, {
+        src: Buffer.from('example text'),
+        name: 'file.txt',
+        description: 'file description'
+      });
+
+      expect(docData).toContainChunk([
+        `10 0 obj`,
+        `<<
+/Subtype /FileAttachment
+/FS 9 0 R
+/Contents (file description)
+/Type /Annot
+/Rect [100 672 120 692]
+/Border [0 0 0]
+/C [0 0 0]
+>>`
+      ]);
+    });
+
+    test("overriding the file's description", () => {
+      const docData = logData(document);
+
+      document.fileAnnotation(
+        100,
+        100,
+        20,
+        20,
+        {
+          src: Buffer.from('example text'),
+          name: 'file.txt',
+          description: 'file description'
+        },
+        {
+          Contents: 'other description'
+        }
+      );
+
+      expect(docData).toContainChunk([
+        `10 0 obj`,
+        `<<
+/Contents (other description)
+/Subtype /FileAttachment
+/FS 9 0 R
+/Type /Annot
+/Rect [100 672 120 692]
+/Border [0 0 0]
+/C [0 0 0]
+>>`
+      ]);
+    });
   });
 });
